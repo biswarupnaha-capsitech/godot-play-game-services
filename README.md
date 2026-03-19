@@ -43,7 +43,14 @@ Thanks also to the [Godot Foundation](https://godot.foundation/) for allowing me
 If you want to contribute, please read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 ## Install the plugin
-Using the plugin requires downloading the assets in the [releases section](https://github.com/Iakobs/godot-play-game-services/releases) of the repository and following the steps described there to copy the plugin folder to your Godot project. You can't download this plugin from the [Asset Library](https://godotengine.org/asset-library/asset/2440) directly because of the Android binaries needed. The Sign-In flow has been also changed so now the plugin doesn't make an automatic authentication check.
+
+1. Download the latest release from the [Godot Asset Store](https://store-beta.godotengine.org/asset/jacob-ibanez-sanchez/google-play-games-services-for-godot/) or the [GitHub releases](https://github.com/godot-sdk-integrations/godot-play-game-services/releases).
+2. Extract and copy the plugin to your project's `addons` folder. The final structure should look like:
+```
+[Project root]/addons/GodotPlayGameServices/
+```
+3. Open your project in Godot.
+4. In main menu, go to `Project > Project Settings > Plugins`, and enable **GodotPlayGameServices**.
 
 ## Philosophy of the plugin
 This plugin has been revamped since version 3.0. Before, the plugin created several autoloads, one per each feature of the Play Games API (sign in, leaderboards, snapshots, etc.). Now the plugin follows the Godot philosophy of using Nodes, therefore the autoloads have been converted to Nodes, except the main `GodotPlayGamesServices` one, which now requires manual initialization. The Sign-In flow has been also changed so now the plugin doesn't make an automatic authentication check.
