@@ -32,6 +32,14 @@ fun getSignals(): MutableSet<SignalInfo> = mutableSetOf(
     EventsSignals.eventsLoadedByIds,
 
     HelperSignals.imageStored,
+
+    UpdateSignals.updateAvailable,
+    UpdateSignals.noUpdateAvailable,
+    UpdateSignals.updateCheckFailed,
+    UpdateSignals.downloadProgress,
+    UpdateSignals.downloadCompleted,
+    UpdateSignals.installCompleted,
+    UpdateSignals.updateCancelled
 )
 
 /**
@@ -222,4 +230,77 @@ object HelperSignals {
      * @return The stored file's path.
      */
     val imageStored = SignalInfo("imageStored", String::class.java)
+}
+
+
+/**
+ * Signals emitted by the Google Play In-App Update feature.
+ */
+
+object UpdateSignals {
+
+    /**
+     * Emitted when an update is available.
+     *
+     * Arguments:
+     * availableVersionCode : Int
+     * updatePriority       : Int
+     * stalenessDays        : Int
+     * immediateAllowed     : Boolean
+     * flexibleAllowed      : Boolean
+     */
+    val updateAvailable = SignalInfo(
+        "update_available",
+        Int::class.java,
+        Int::class.java,
+        Int::class.java,
+        Boolean::class.java,
+        Boolean::class.java
+    )
+
+    /**
+     * No update exists.
+     */
+    val noUpdateAvailable = SignalInfo(
+        "no_update_available"
+    )
+
+    /**
+     * Checking failed.
+     */
+    val updateCheckFailed = SignalInfo(
+        "update_check_failed",
+        Int::class.java,
+        String::class.java
+    )
+
+    /**
+     * Flexible download progress.
+     */
+    val downloadProgress = SignalInfo(
+        "update_download_progress",
+        Long::class.java,
+        Long::class.java
+    )
+
+    /**
+     * Flexible download completed.
+     */
+    val downloadCompleted = SignalInfo(
+        "update_download_completed"
+    )
+
+    /**
+     * Update installed.
+     */
+    val installCompleted = SignalInfo(
+        "update_install_completed"
+    )
+
+    /**
+     * User cancelled update.
+     */
+    val updateCancelled = SignalInfo(
+        "update_cancelled"
+    )
 }
