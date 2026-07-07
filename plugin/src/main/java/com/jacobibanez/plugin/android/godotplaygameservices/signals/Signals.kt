@@ -32,6 +32,15 @@ fun getSignals(): MutableSet<SignalInfo> = mutableSetOf(
     EventsSignals.eventsLoadedByIds,
 
     HelperSignals.imageStored,
+
+    UpdateSignals.updateChecked,
+    UpdateSignals.updateCheckFailed,
+    UpdateSignals.updateCancelled,
+    UpdateSignals.updateStarted,
+    UpdateSignals.updateFailed,
+    UpdateSignals.downloadProgress,
+    UpdateSignals.downloadCompleted,
+    UpdateSignals.installCompleted,
 )
 
 /**
@@ -222,4 +231,104 @@ object HelperSignals {
      * @return The stored file's path.
      */
     val imageStored = SignalInfo("imageStored", String::class.java)
+}
+
+
+/**
+ * Signals emitted by the Google Play In-App Updates feature.
+ */
+object UpdateSignals {
+
+    /**
+     * Emitted when the update check completes.
+     *
+     * Arguments:
+     * isUpdateAvailable   : Boolean
+     * availableVersionCode: Int
+     * updatePriority      : Int
+     * stalenessDays       : Int
+     * immediateAllowed    : Boolean
+     * flexibleAllowed     : Boolean
+     */
+    val updateChecked = SignalInfo(
+        "update_checked",
+        Boolean::class.java,
+        Int::class.java,
+        Int::class.java,
+        Int::class.java,
+        Boolean::class.java,
+        Boolean::class.java
+    )
+
+    /**
+     * Emitted when checking for updates fails.
+     *
+     * Arguments:
+     * errorCode    : Int
+     * errorMessage : String
+     */
+    val updateCheckFailed = SignalInfo(
+        "update_check_failed",
+        Int::class.java,
+        String::class.java
+    )
+
+    /**
+     * Emitted when an update flow starts.
+     *
+     * Arguments:
+     * isImmediate : Boolean
+     */
+    val updateStarted = SignalInfo(
+        "update_started",
+        Boolean::class.java
+    )
+
+    /**
+     * Emitted during a flexible update download.
+     *
+     * Arguments:
+     * bytesDownloaded : Long
+     * totalBytes      : Long
+     */
+    val downloadProgress = SignalInfo(
+        "update_download_progress",
+        Long::class.java,
+        Long::class.java
+    )
+
+    /**
+     * Emitted when a flexible update has finished downloading and
+     * is ready to be installed via completeUpdate().
+     */
+    val downloadCompleted = SignalInfo(
+        "update_download_completed"
+    )
+
+    /**
+     * Emitted after the update has been successfully installed.
+     */
+    val installCompleted = SignalInfo(
+        "update_install_completed"
+    )
+
+    /**
+     * Emitted when the user cancels the update flow.
+     */
+    val updateCancelled = SignalInfo(
+        "update_cancelled"
+    )
+
+    /**
+     * Emitted when the update flow fails.
+     *
+     * Arguments:
+     * errorCode    : Int
+     * errorMessage : String
+     */
+    val updateFailed = SignalInfo(
+        "update_failed",
+        Int::class.java,
+        String::class.java
+    )
 }

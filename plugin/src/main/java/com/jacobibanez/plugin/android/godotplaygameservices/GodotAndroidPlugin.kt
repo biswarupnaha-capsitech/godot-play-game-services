@@ -16,6 +16,7 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.SignalInfo
 import org.godotengine.godot.plugin.UsedByGodot
+import com.jacobibanez.plugin.android.godotplaygameservices.updates.InAppUpdateProxy
 
 /**
  * This is the main Godot Plugin class exposing the interfaces to use with Godot. In this class you
@@ -32,6 +33,7 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     private val playersProxy = PlayersProxy(godot)
     private val snapshotsProxy = SnapshotsProxy(godot)
     private val eventsProxy = EventsProxy(godot)
+    private val inAppUpdateProxy = InAppUpdateProxy(godot)
 
     /** @suppress */
     override fun getPluginSignals(): MutableSet<SignalInfo> {
@@ -505,4 +507,8 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     @UsedByGodot
     fun loadEventsByIds(forceReload: Boolean, eventIds: Array<String>) =
         eventsProxy.loadEventsByIds(forceReload, eventIds)
+
+    @UsedByGodot
+    fun checkForUpdate() =
+        inAppUpdateProxy.checkForUpdate()
 }
