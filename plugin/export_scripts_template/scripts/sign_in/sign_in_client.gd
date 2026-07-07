@@ -5,7 +5,7 @@ class_name PlayGamesSignInClient extends Node
 ## This autoload exposes methods and signals to control the player sign in process.[br]
 ## [br]
 ## If the player is already signed in into Google Play Games, the plugin does
-## a check at startup, so usually you don't have to use these methods. Use them only 
+## a check at startup, so usually you don't have to use these methods. Use them only
 ## to provide a manual way for the user to sign in.
 
 ## Signal emitted after calling the [method is_authenticated] method.[br]

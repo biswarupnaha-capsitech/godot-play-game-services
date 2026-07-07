@@ -497,4 +497,8 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     @UsedByGodot
     fun loadEventsByIds(forceReload: Boolean, eventIds: Array<String>) =
         eventsProxy.loadEventsByIds(forceReload, eventIds)
+
+    @UsedByGodot
+    fun checkForUpdate() =
+        inAppUpdateProxy.checkForUpdate()
 }
