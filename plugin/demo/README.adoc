@@ -2,7 +2,7 @@
 :imagesdir: ../../docs/images
 
 = The Demo Project
-Doc Writer <jacobibanez@jacobibanez.com>
+Doc Writer <biswarup.naha@capsitech.com>
 :toc:
 
 This folder is a Godot project that you can directly open in Godot to see an implementation of the plugin in a real Godot game.

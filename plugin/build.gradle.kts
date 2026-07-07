@@ -18,7 +18,7 @@ android {
     }
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
 
         manifestPlaceholders["godotPluginName"] = pluginName
         manifestPlaceholders["godotPluginPackageName"] = pluginPackageName
@@ -39,8 +39,12 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.google.android.gms:play-services-games-v2:21.0.0")
     implementation("org.godotengine:godot:4.5.1.stable")
-
+    implementation("androidx.credentials:credentials:1.3.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.10")
+    implementation("com.google.android.gms:play-services-games-v2:20.0.1")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 }
 
 // BUILD TASKS DEFINITION

@@ -93,6 +93,16 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     fun signIn() = signInProxy.signIn()
 
     /**
+     * Use this method to provide a manual way to the user for signing out.
+     *
+     * The method emits the [com.jacobibanez.plugin.android.godotplaygameservices.signals.SignInSignals.userAuthenticated] signal.
+     */
+    @UsedByGodot
+    fun signOut() {
+        signInProxy.signOut()
+    }
+
+    /**
      * Requests server-side access to Play Games Services for the currently signed-in player.
      *
      * When requested, an authorization code is returned that can be used by your server to exchange
