@@ -36,11 +36,13 @@ android {
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.google.android.gms:play-services-games-v2:21.0.0")
     implementation("org.godotengine:godot:4.5.1.stable")
-
-    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.9.10")
+    implementation("com.google.android.play:app-update:2.1.0")
+    implementation("com.google.android.play:app-update-ktx:2.1.0")
+    implementation("org.godotengine:godot:4.5.1.stable")
+    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:2.2.0")
 }
 
 // BUILD TASKS DEFINITION

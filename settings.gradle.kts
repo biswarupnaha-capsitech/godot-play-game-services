@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GodotPlayGameServices"
 include(":plugin")
+include(":godotplayupdate")
