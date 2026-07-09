@@ -41,6 +41,15 @@ fun getSignals(): MutableSet<SignalInfo> = mutableSetOf(
     UpdateSignals.downloadProgress,
     UpdateSignals.downloadCompleted,
     UpdateSignals.installCompleted,
+
+    MessagingSignals.tokenReceived,
+    MessagingSignals.tokenRefreshed,
+    MessagingSignals.notificationReceived,
+    MessagingSignals.notificationOpened,
+    MessagingSignals.messagingError,
+    MessagingSignals.topicSubscribed,
+    MessagingSignals.topicUnsubscribed,
+    MessagingSignals.notificationPermissionResult,
 )
 
 /**
@@ -330,5 +339,106 @@ object UpdateSignals {
         "update_failed",
         Int::class.java,
         String::class.java
+    )
+}
+
+object MessagingSignals {
+
+    /**
+     * Emitted when the FCM registration token is received.
+     *
+     * Arguments:
+     * token : String
+     */
+    val tokenReceived = SignalInfo(
+        "token_received",
+        String::class.java
+    )
+
+    /**
+     * Emitted when Firebase refreshes the registration token.
+     *
+     * Arguments:
+     * token : String
+     */
+    val tokenRefreshed = SignalInfo(
+        "token_refreshed",
+        String::class.java
+    )
+
+    /**
+     * Emitted when a push notification is received while the app
+     * is in the foreground.
+     *
+     * Arguments:
+     * title : String
+     * body : String
+     * data : String (JSON)
+     */
+    val notificationReceived = SignalInfo(
+        "notification_received",
+        String::class.java,
+        String::class.java,
+        String::class.java
+    )
+
+    /**
+     * Emitted when the user opens the application by tapping
+     * a notification.
+     *
+     * Arguments:
+     * title : String
+     * body : String
+     * data : String (JSON)
+     */
+    val notificationOpened = SignalInfo(
+        "notification_opened",
+        String::class.java,
+        String::class.java,
+        String::class.java
+    )
+
+    /**
+     * Emitted when a messaging operation fails.
+     *
+     * Arguments:
+     * message : String
+     */
+    val messagingError = SignalInfo(
+        "messaging_error",
+        String::class.java
+    )
+
+    /**
+     * Successfully subscribed to a topic.
+     *
+     * Arguments:
+     * topic : String
+     */
+    val topicSubscribed = SignalInfo(
+        "topic_subscribed",
+        String::class.java
+    )
+
+    /**
+     * Successfully unsubscribed from a topic.
+     *
+     * Arguments:
+     * topic : String
+     */
+    val topicUnsubscribed = SignalInfo(
+        "topic_unsubscribed",
+        String::class.java
+    )
+
+    /**
+     * Emitted after requesting the notification permission.
+     *
+     * Arguments:
+     * granted : Boolean
+     */
+    val notificationPermissionResult = SignalInfo(
+        "notification_permission_result",
+        Boolean::class.java
     )
 }
