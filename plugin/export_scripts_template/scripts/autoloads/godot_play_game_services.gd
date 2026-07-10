@@ -41,18 +41,24 @@ func initialize() -> PlayGamesPluginError:
 			print("GodotPlayGameServices plugin initialized successfully.")
 			
 			android_plugin = Engine.get_singleton(plugin_name)
-			android_plugin.initialize()
 			
+			if FileAccess.file_exists("res://google-services.json"):
+				var json_content := FileAccess.get_file_as_string("res://google-services.json")
+				if json_content != "":
+					android_plugin.initializeFirebaseWithJson(json_content)
+			
+			android_plugin.initialize()
+			android_plugin.requestNotificationPermission()
 			android_plugin.imageStored.connect(func(file_path: String):
 				image_stored.emit(file_path)
 			)
 			return PlayGamesPluginError.OK
 		else:
 			printerr("GodotPlayGameServices not found. Google Play Games Services will not work.")
-	
+
 	return PlayGamesPluginError.PLUGIN_NOT_FOUND
 
-## Displays the given image in the given texture rectangle.[br]
+# Displays the given image in the given texture rectangle.[br]
 ## [br]
 ## [param texture_rect]: The texture rectangle control to display the image.[br]
 ## [param file_path]: The file path of the image, for example user://image.png.
@@ -62,3 +68,19 @@ func display_image_in_texture_rect(texture_rect: TextureRect, file_path: String)
 		texture_rect.texture = ImageTexture.create_from_image(image)
 	else:
 		print("File %s does not exist." % file_path)
+
+## Programmatically initializes Firebase options from GDScript, bypassing the need
+## for the google-services Gradle plugin or assets/google-services.json config files.
+func initialize_firebase_with_options(api_key: String, app_id: String, sender_id: String, project_id: String) -> void:
+	if android_plugin:
+		android_plugin.initializeFirebaseWithOptions(api_key, app_id, sender_id, project_id)
+
+
+func _on_token_received(token: String) -> void:
+	print("FCM Token: ", token)
+func _on_notification_received(title: String, body: String, data: String) -> void:
+	print("Notification Received: ", title, " - ", body)
+func _on_notification_opened(title: String, body: String, data: String) -> void:
+	print("Notification Opened: ", title)
+func _on_messaging_error(err: String) -> void:
+	print("Messaging Error: ", err)

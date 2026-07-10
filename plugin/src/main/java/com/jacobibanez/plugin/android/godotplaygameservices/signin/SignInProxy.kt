@@ -1,18 +1,14 @@
 package com.jacobibanez.plugin.android.godotplaygameservices.signin
 
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.games.GamesSignInClient
 import com.google.android.gms.games.PlayGames
-import com.google.android.gms.games.gamessignin.AuthResponse
 import com.google.android.gms.games.gamessignin.AuthScope
 import com.jacobibanez.plugin.android.godotplaygameservices.BuildConfig.GODOT_PLUGIN_NAME
 import com.jacobibanez.plugin.android.godotplaygameservices.signals.SignInSignals.serverSideAccessRequested
 import com.jacobibanez.plugin.android.godotplaygameservices.signals.SignInSignals.userAuthenticated
 import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin.emitSignal
-import java.util.Arrays
 
 class SignInProxy(
     private val godot: Godot,
@@ -62,27 +58,27 @@ class SignInProxy(
             }
     }
 
-    fun signOut() {
-        Log.d(tag, "Signing out")
-
-        val activity = godot.getActivity() ?: return
-
-        GoogleSignIn.getClient(
-            activity,
-            GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
-        )
-            .signOut()
-            .addOnCompleteListener {
-                Log.d(tag, "Sign out complete")
-
-                emitSignal(
-                    godot,
-                    GODOT_PLUGIN_NAME,
-                    userAuthenticated,
-                    false
-                )
-            }
-    }
+//    fun signOut() {
+//        Log.d(tag, "Signing out")
+//
+//        val activity = godot.getActivity() ?: return
+//
+//        GoogleSignIn.getClient(
+//            activity,
+//            GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN
+//        )
+//            .signOut()
+//            .addOnCompleteListener {
+//                Log.d(tag, "Sign out complete")
+//
+//                emitSignal(
+//                    godot,
+//                    GODOT_PLUGIN_NAME,
+//                    userAuthenticated,
+//                    false
+//                )
+//            }
+//    }
 
     fun signInRequestServerSideAccess(
         serverClientId: String,

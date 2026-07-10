@@ -1,14 +1,22 @@
 package com.jacobibanez.plugin.android.godotplaygameservices
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import android.view.View
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.google.android.gms.games.PlayGamesSdk
+import com.google.firebase.FirebaseApp
 import com.jacobibanez.plugin.android.godotplaygameservices.achievements.AchievementsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.crashlytics.CrashlyticsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.events.EventsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.leaderboards.LeaderboardsProxy
+import com.jacobibanez.plugin.android.godotplaygameservices.messaging.MessagingManager
+import com.jacobibanez.plugin.android.godotplaygameservices.messaging.MessagingProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.players.PlayersProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.signals.getSignals
 import com.jacobibanez.plugin.android.godotplaygameservices.signin.SignInProxy
@@ -36,6 +44,12 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     private val eventsProxy = EventsProxy(godot)
     private val inAppUpdateProxy = InAppUpdateProxy(godot)
     private val crashlyticsProxy = CrashlyticsProxy(godot)
+    private val messagingProxy by lazy {
+        MessagingProxy(
+            godot,
+            messagingManager = MessagingManager(godot.getActivity())
+        )
+    }
 
     /** @suppress */
     override fun getPluginSignals(): MutableSet<SignalInfo> {
@@ -58,6 +72,24 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
         snapshotsProxy.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onMainRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onMainRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
+
+        messagingProxy.onRequestPermissionsResult(
+            requestCode,
+            permissions,
+            grantResults
+        )
+    }
+
     /**
      * This method initializes the Play Games SDK. It should be called right after checking that
      * the plugin is loaded into Godot, for example:
@@ -77,7 +109,159 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     @UsedByGodot
     fun initialize() {
         Log.d(pluginName, "Initializing Google Play Game Services")
+        initializeFirebase()
         PlayGamesSdk.initialize(activity!!)
+    }
+
+    private fun initializeFirebase() {
+        try {
+            // First check if Firebase is already initialized (e.g. via initializeFirebaseWithJson)
+            if (FirebaseApp.getApps(activity!!).isNotEmpty()) {
+                Log.i(pluginName, "Firebase is already initialized.")
+                return
+            }
+
+            // First try default initialization (from generated resources via gradle plugin)
+            val app = FirebaseApp.initializeApp(activity!!)
+            if (app == null) {
+                throw IllegalStateException("Default FirebaseApp failed to initialize (no default options found)")
+            }
+            Log.d(pluginName, "Firebase initialized with default options.")
+        } catch (e: Exception) {
+            Log.w(pluginName, "Default Firebase initialization failed: ${e.message}. Trying asset fallback...")
+            try {
+                // Try to load google-services.json from assets
+                val jsonString = activity!!.assets.open("google-services.json").bufferedReader().use { it.readText() }
+                val gson = com.google.gson.Gson()
+                val jsonMap = gson.fromJson(jsonString, Map::class.java)
+
+                val projectInfo = jsonMap["project_info"] as? Map<*, *>
+                val projectNumber = projectInfo?.get("project_number") as? String
+                val projectId = projectInfo?.get("project_id") as? String
+
+                val clients = jsonMap["client"] as? List<*>
+                var apiKey: String? = null
+                var appId: String? = null
+
+                val packageName = activity!!.packageName
+                if (clients != null) {
+                    for (clientObj in clients) {
+                        val client = clientObj as? Map<*, *>
+                        val clientInfo = client?.get("client_info") as? Map<*, *>
+                        val androidClientInfo = clientInfo?.get("android_client_info") as? Map<*, *>
+                        val clientPackageName = androidClientInfo?.get("package_name") as? String
+
+                        if (clientPackageName == packageName) {
+                            appId = clientInfo?.get("mobilesdk_app_id") as? String
+                            val apiKeys = client?.get("api_key") as? List<*>
+                            val firstKey = apiKeys?.firstOrNull() as? Map<*, *>
+                            apiKey = firstKey?.get("current_key") as? String
+                            break
+                        }
+                    }
+                }
+
+                if (appId != null && apiKey != null && projectNumber != null) {
+                    val options = com.google.firebase.FirebaseOptions.Builder()
+                        .setApplicationId(appId)
+                        .setApiKey(apiKey)
+                        .setGcmSenderId(projectNumber)
+                        .apply {
+                            if (projectId != null) {
+                                setProjectId(projectId)
+                            }
+                        }
+                        .build()
+                    FirebaseApp.initializeApp(activity!!, options)
+                    Log.i(pluginName, "Firebase initialized successfully from assets/google-services.json")
+                } else {
+                    Log.e(pluginName, "Could not find matching client configuration in google-services.json for package: $packageName")
+                }
+            } catch (assetEx: Exception) {
+                Log.e(pluginName, "Failed to initialize Firebase from assets/google-services.json: ${assetEx.message}")
+            }
+        }
+    }
+
+    /**
+     * Initializes Firebase using the contents of a google-services.json file passed as a string.
+     */
+    @UsedByGodot
+    fun initializeFirebaseWithJson(jsonString: String) {
+        try {
+            if (FirebaseApp.getApps(activity!!).isNotEmpty()) {
+                Log.i(pluginName, "Firebase is already initialized.")
+                return
+            }
+
+            val gson = com.google.gson.Gson()
+            val jsonMap = gson.fromJson(jsonString, Map::class.java)
+
+            val projectInfo = jsonMap["project_info"] as? Map<*, *>
+            val projectNumber = projectInfo?.get("project_number") as? String
+            val projectId = projectInfo?.get("project_id") as? String
+
+            val clients = jsonMap["client"] as? List<*>
+            var apiKey: String? = null
+            var appId: String? = null
+
+            val packageName = activity!!.packageName
+            if (clients != null) {
+                for (clientObj in clients) {
+                    val client = clientObj as? Map<*, *>
+                    val clientInfo = client?.get("client_info") as? Map<*, *>
+                    val androidClientInfo = clientInfo?.get("android_client_info") as? Map<*, *>
+                    val clientPackageName = androidClientInfo?.get("package_name") as? String
+
+                    if (clientPackageName == packageName) {
+                        appId = clientInfo?.get("mobilesdk_app_id") as? String
+                        val apiKeys = client?.get("api_key") as? List<*>
+                        val firstKey = apiKeys?.firstOrNull() as? Map<*, *>
+                        apiKey = firstKey?.get("current_key") as? String
+                        break
+                    }
+                }
+            }
+
+            if (appId != null && apiKey != null && projectNumber != null) {
+                val options = com.google.firebase.FirebaseOptions.Builder()
+                    .setApplicationId(appId)
+                    .setApiKey(apiKey)
+                    .setGcmSenderId(projectNumber)
+                    .apply {
+                        if (projectId != null) {
+                            setProjectId(projectId)
+                        }
+                    }
+                    .build()
+                FirebaseApp.initializeApp(activity!!, options)
+                Log.i(pluginName, "Firebase initialized successfully using google-services.json string from Godot.")
+            } else {
+                Log.e(pluginName, "Could not find matching client configuration in provided JSON string for package: $packageName")
+            }
+        } catch (e: Exception) {
+            Log.e(pluginName, "Failed to initialize Firebase from JSON string: ${e.message}")
+        }
+    }
+
+    /**
+     * Exposes programmatic Firebase initialization to GDScript.
+     * Allows fully passing options to avoid needing google-services.json in assets altogether.
+     */
+    @UsedByGodot
+    fun initializeFirebaseWithOptions(apiKey: String, appId: String, senderId: String, projectId: String) {
+        try {
+            val options = com.google.firebase.FirebaseOptions.Builder()
+                .setApiKey(apiKey)
+                .setApplicationId(appId)
+                .setGcmSenderId(senderId)
+                .setProjectId(projectId)
+                .build()
+            FirebaseApp.initializeApp(activity!!, options)
+            Log.i(pluginName, "Firebase initialized successfully with options from GDScript.")
+        } catch (e: Exception) {
+            Log.e(pluginName, "Failed to initialize Firebase with options from GDScript: ${e.message}")
+        }
     }
 
     /**
@@ -102,10 +286,10 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
      *
      * The method emits the [com.jacobibanez.plugin.android.godotplaygameservices.signals.SignInSignals.userAuthenticated] signal.
      */
-    @UsedByGodot
-    fun signOut() {
-        signInProxy.signOut()
-    }
+//    @UsedByGodot
+//    fun signOut() {
+//        signInProxy.signOut()
+//    }
 
     /**
      * Requests server-side access to Play Games Services for the currently signed-in player.
@@ -585,4 +769,35 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
      */
     @UsedByGodot
     fun forceCrash() = crashlyticsProxy.crash()
+    @UsedByGodot
+    fun getToken() {
+        messagingProxy.getToken()
+    }
+
+    @UsedByGodot
+    fun subscribeToTopic(topic: String) {
+        messagingProxy.subscribeToTopic(topic)
+    }
+
+    @UsedByGodot
+    fun unsubscribeFromTopic(topic: String) {
+        messagingProxy.unsubscribeFromTopic(topic)
+    }
+
+    @UsedByGodot
+    fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val activity = activity ?: return
+            if (ContextCompat.checkSelfPermission(
+                    activity, Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    2001
+                )
+            }
+        }
+    }
 }
