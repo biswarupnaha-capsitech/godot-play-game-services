@@ -64,6 +64,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
             "com.google.android.play:app-update-ktx:2.1.0",
             "com.google.firebase:firebase-crashlytics:19.4.0",
             "com.google.firebase:firebase-analytics:22.2.0"
+            "com.google.firebase:firebase-bom:34.2.0",
+            "com.google.firebase:firebase-messaging",
+            "com.google.firebase:firebase-messaging-ktx:24.1.2"
 			])
 	
 	func _get_android_manifest_application_element_contents(platform: EditorExportPlatform, debug: bool) -> String:

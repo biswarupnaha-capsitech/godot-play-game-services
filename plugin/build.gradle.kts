@@ -10,6 +10,10 @@ val pluginName = "GodotPlayGameServices"
 
 val pluginPackageName = "com.jacobibanez.plugin.android.godotplaygameservices"
 
+base {
+    archivesName.set(pluginName)
+}
+
 android {
     namespace = pluginPackageName
     compileSdk = 35
@@ -24,7 +28,6 @@ android {
         manifestPlaceholders["godotPluginName"] = pluginName
         manifestPlaceholders["godotPluginPackageName"] = pluginPackageName
         buildConfigField("String", "GODOT_PLUGIN_NAME", "\"${pluginName}\"")
-//        setProperty("archivesBaseName", pluginName)
     }
 
     compileOptions {
@@ -40,10 +43,13 @@ dependencies {
 
     implementation("com.google.code.gson:gson:2.14.0")
     implementation("com.google.android.gms:play-services-games-v2:21.0.0")
-    implementation("org.godotengine:godot:4.5.1.stable")
+    implementation("org.godotengine:godot:4.6.2.stable")
     implementation("com.google.android.play:app-update:2.1.0")
     implementation("com.google.android.play:app-update-ktx:2.1.0")
     dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:2.2.0")
+    implementation(platform("com.google.firebase:firebase-bom:34.15.0"))
+    implementation("com.google.firebase:firebase-messaging")
+    implementation("com.google.firebase:firebase-messaging-ktx:24.1.2")
 }
 
 // BUILD TASKS DEFINITION
