@@ -3,15 +3,16 @@ import org.jetbrains.dokka.base.DokkaBaseConfiguration
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
-    id("com.android.library") version "8.7.3" apply false
-    id("org.jetbrains.kotlin.android") version "2.1.20" apply false
-    id("org.jetbrains.dokka") version "1.9.10"
-    id("com.android.application") version "8.7.3" apply false
+    id("com.android.library") version "9.0.1" apply false
+    id("org.jetbrains.dokka") version "2.2.0"
+    id("com.android.application") version "9.0.1" apply false
+    id("com.google.gms.google-services") version "4.5.0" apply false
+    id("com.google.firebase.crashlytics") version "3.0.7" apply false
 }
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.9.10")
+        classpath("org.jetbrains.dokka:dokka-base:2.2.0")
     }
 }
 

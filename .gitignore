@@ -8,6 +8,14 @@ local.properties
 # Log/OS Files
 *.log
 
+# AI files
+.codegraph
+.cursor
+.claude
+.gemini
+.mcp.json
+GEMINI.md
+
 # Android Studio generated files and folders
 captures/
 .externalNativeBuild/

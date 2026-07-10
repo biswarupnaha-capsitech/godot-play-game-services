@@ -61,7 +61,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 			"com.google.code.gson:gson:2.11.0", 
 			"com.google.android.gms:play-services-games-v2:21.0.0",
             "com.google.android.play:app-update:2.1.0",
-            "com.google.android.play:app-update-ktx:2.1.0"
+            "com.google.android.play:app-update-ktx:2.1.0",
+            "com.google.firebase:firebase-crashlytics:19.4.0",
+            "com.google.firebase:firebase-analytics:22.2.0"
 			])
 	
 	func _get_android_manifest_application_element_contents(platform: EditorExportPlatform, debug: bool) -> String:
