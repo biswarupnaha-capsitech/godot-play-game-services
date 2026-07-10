@@ -697,7 +697,7 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
         inAppUpdateProxy.checkForUpdate()
 
     @UsedByGodot
-    fun getMessagingToken() {
+    fun getToken() {
         messagingProxy.getToken()
     }
 
