@@ -12,7 +12,6 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.games.PlayGamesSdk
 import com.google.firebase.FirebaseApp
 import com.jacobibanez.plugin.android.godotplaygameservices.achievements.AchievementsProxy
-import com.jacobibanez.plugin.android.godotplaygameservices.crashlytics.CrashlyticsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.events.EventsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.leaderboards.LeaderboardsProxy
 import com.jacobibanez.plugin.android.godotplaygameservices.messaging.MessagingManager
@@ -43,7 +42,6 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     private val snapshotsProxy = SnapshotsProxy(godot)
     private val eventsProxy = EventsProxy(godot)
     private val inAppUpdateProxy = InAppUpdateProxy(godot)
-    private val crashlyticsProxy = CrashlyticsProxy(godot)
     private val messagingProxy by lazy {
         MessagingProxy(
             godot,
@@ -60,7 +58,6 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     override fun onMainCreate(activity: Activity?): View? {
         Thread.setDefaultUncaughtExceptionHandler { _, exception ->
             Log.e(pluginName, "Uncaught Exception! ${exception.message}")
-            crashlyticsProxy.recordException("Uncaught Exception: ${exception.message}")
         }
         return super.onMainCreate(activity)
     }
@@ -699,76 +696,6 @@ class GodotAndroidPlugin(godot: Godot) : GodotPlugin(godot) {
     fun checkForUpdate() =
         inAppUpdateProxy.checkForUpdate()
 
-    /**
-     * Enables or disables Crashlytics collection.
-     *
-     * @param enabled True to enable, false to disable.
-     */
-    @UsedByGodot
-    fun setCrashlyticsCollectionEnabled(enabled: Boolean) =
-        crashlyticsProxy.setCrashlyticsCollectionEnabled(enabled)
-
-    /**
-     * Logs a message to Crashlytics.
-     *
-     * @param message The message to log.
-     */
-    @UsedByGodot
-    fun crashlyticsLog(message: String) = crashlyticsProxy.log(message)
-
-    /**
-     * Sets a custom key and value for Crashlytics.
-     *
-     * @param key The key.
-     * @param value The value.
-     */
-    @UsedByGodot
-    fun setCrashlyticsCustomKey(key: String, value: String) =
-        crashlyticsProxy.setCustomKey(key, value)
-
-    /**
-     * Sets a custom integer key and value for Crashlytics.
-     */
-    @UsedByGodot
-    fun setCrashlyticsCustomKeyInt(key: String, value: Int) =
-        crashlyticsProxy.setCustomKey(key, value)
-
-    /**
-     * Sets a custom boolean key and value for Crashlytics.
-     */
-    @UsedByGodot
-    fun setCrashlyticsCustomKeyBool(key: String, value: Boolean) =
-        crashlyticsProxy.setCustomKey(key, value)
-
-    /**
-     * Sets a custom float key and value for Crashlytics.
-     */
-    @UsedByGodot
-    fun setCrashlyticsCustomKeyFloat(key: String, value: Float) =
-        crashlyticsProxy.setCustomKey(key, value)
-
-    /**
-     * Sets a user ID for Crashlytics.
-     *
-     * @param userId The user ID.
-     */
-    @UsedByGodot
-    fun setCrashlyticsUserId(userId: String) = crashlyticsProxy.setUserId(userId)
-
-    /**
-     * Records a non-fatal exception.
-     *
-     * @param message The exception message.
-     */
-    @UsedByGodot
-    fun recordCrashlyticsException(message: String) =
-        crashlyticsProxy.recordException(message)
-
-    /**
-     * Forces a crash for testing purposes.
-     */
-    @UsedByGodot
-    fun forceCrash() = crashlyticsProxy.crash()
     @UsedByGodot
     fun getToken() {
         messagingProxy.getToken()
