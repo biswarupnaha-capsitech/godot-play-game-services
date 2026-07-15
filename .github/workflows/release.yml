@@ -1,0 +1,81 @@
+name: Build and Release
+
+# Triggers on every push to main. Version is auto-derived, no manual tagging needed.
+on:
+  push:
+    branches:
+      - main # change to 'master' or your default branch if different
+
+permissions:
+  contents: write # needed to create GitHub Releases
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17" # adjust to match your project's required JDK version
+          distribution: "temurin"
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew assemble
+
+      - name: Set project name and version
+        id: vars
+        run: |
+          # Project name: falls back to the repo name, override by hardcoding if you prefer
+          PROJECT_NAME="${{ github.event.repository.name }}"
+
+          # Pull the version property out of build.gradle (or build.gradle.kts).
+          # Matches lines like:
+          #   version = '1.2.3'
+          #   version = "1.2.3"
+          #   version '1.2.3'
+          GRADLE_FILE="build.gradle"
+          if [ ! -f "$GRADLE_FILE" ] && [ -f "build.gradle.kts" ]; then
+            GRADLE_FILE="build.gradle.kts"
+          fi
+
+          BASE_VERSION=$(grep -E "^\s*version\s*=?\s*['\"]" "$GRADLE_FILE" | head -n1 | sed -E "s/^\s*version\s*=?\s*['\"]([^'\"]+)['\"].*/\1/")
+
+          if [ -z "$BASE_VERSION" ]; then
+            echo "::warning::Could not find a version property in $GRADLE_FILE, falling back to 0.0.0"
+            BASE_VERSION="0.0.0"
+          fi
+
+          # Append the run number so every build gets a unique, ordered version,
+          # even if build.gradle's version string hasn't changed.
+          VERSION="${BASE_VERSION}-${GITHUB_RUN_NUMBER}"
+
+          echo "project_name=$PROJECT_NAME" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "zip_name=${PROJECT_NAME}-${VERSION}.zip" >> "$GITHUB_OUTPUT"
+
+      - name: Verify addons folder exists
+        run: |
+          if [ ! -d "plugin/out/addons" ]; then
+            echo "::error::plugin/out/addons directory not found. Check the path or your build output."
+            exit 1
+          fi
+
+      - name: Zip addons folder
+        run: |
+          cd plugin/out
+          zip -r "${{ github.workspace }}/${{ steps.vars.outputs.zip_name }}" addons
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ steps.vars.outputs.project_name }} ${{ steps.vars.outputs.version }}"
+          tag_name: "v${{ steps.vars.outputs.version }}" # e.g. v1.2.3-45; action creates this tag automatically
+          files: ${{ steps.vars.outputs.zip_name }}
+          generate_release_notes: true

@@ -1,6 +1,8 @@
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 
+version="0.0.1"
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
     id("com.android.library") version "8.7.3" apply false
@@ -26,7 +28,7 @@ tasks.dokkaHtmlMultiModule {
     outputDirectory.set(rootDir.resolve("docs/dokka/$name"))
 
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        footerMessage = "©2023 Jacob Ibáñez Sánchez"
+        footerMessage = "©2026 Biswarup Naha"
         customAssets = listOf(file("docs/images/logo-icon.svg"))
     }
 }

@@ -1,5 +1,7 @@
 # Godot Play Game Services
 
+- #### (Modified by Biswarup Naha)
+
 Godot 4.3+ plugin for integration of the latest version of [Google Play Game Services SDK](https://developers.google.com/games/services/android/quickstart).
 
 If you want to download the plugin for a previous version of Godot 4.x, use the branch selector in the repository. For Godot 3.x versions, [look here](https://github.com/Iakobs/godot-google-play-game-services-android-plugin)!
@@ -21,10 +23,12 @@ If you want to download the plugin for a previous version of Godot 4.x, use the 
 - [Install the plugin](#install-the-plugin)
 - [The Demo project](#the-demo-project)
 - [Building the plugin yourself](#building-the-plugin-yourself)
-  - [Downloading the plugin](#downloading-the-plugin)
+  - [Downloading the plugin](#downloading-the-repository)
   - [Building the plugin](#building-the-plugin)
   - [Testing the plugin](#testing-the-plugin)
   - [Configuring the plugin](#configuring-the-plugin)
+- [Godot Integration](#godot-integration)
+- [Supported AuthScopes](#supported-auth-scopes)
 - [Documentation](#documentation)
   - [Kotlin Code](#kotlin-code)
   - [GDScript Code](#gdscript-code)
@@ -55,7 +59,7 @@ If you want to contribute, please read the [CONTRIBUTING.md](CONTRIBUTING.md) fi
 [Project root]/addons/GodotPlayGameServices/
 ```
 
-3. Open your project in Godot.
+1. Open your project in Godot.
 2. In main menu, go to `Project > Project Settings > Plugins`, and enable **GodotPlayGameServices**.
 
 ## Philosophy of the plugin
@@ -119,6 +123,12 @@ To be able to use the plugin, you need to use a **custom gradle build**. Please 
 An additional configuration has to be made in order to connect with Google Game Services. In the Google App, you have to configure an **Android OAuth client**. Google describes the steps [here](https://developers.google.com/games/services/console/enabling#step_3_generate_an_oauth_20_client_id), but at some point you have to introduce the **package name** of your game, as well as the **SHA-1 of your signing key**. Both things need to be introduced also in the Godot Export configuration for Android:
 
 ![Screenshot of the relevant section inside the export configuration for Android in the Godot editor](docs/images/android_export.png)
+
+### Godot Integration
+
+The GDScript code is documented in the code itself, so you can access it via the Godot Editor.
+For a full walkthrough of initializing the plugin and using each client, see the
+[Godot GDScript Integration Guide](docs/GDSCRIPT_INTEGRATION.md).
 
 ### Authentication Scopes
 
