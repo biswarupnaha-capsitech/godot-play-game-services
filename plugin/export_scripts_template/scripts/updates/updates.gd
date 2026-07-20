@@ -84,17 +84,17 @@ func _connect_signals() -> void:
 				update_started.emit(immediate)
 		)
 
-		GodotPlayGameServices.android_plugin.download_progress.connect(
+		GodotPlayGameServices.android_plugin.update_download_progress.connect(
 			func(bytes_downloaded: int, total_bytes: int):
 				update_download_progress.emit(bytes_downloaded, total_bytes)
 		)
 
-		GodotPlayGameServices.android_plugin.download_completed.connect(
+		GodotPlayGameServices.android_plugin.update_download_completed.connect(
 			func():
 				update_download_completed.emit()
 		)
 
-		GodotPlayGameServices.android_plugin.install_completed.connect(
+		GodotPlayGameServices.android_plugin.update_install_completed.connect(
 			func():
 				update_install_completed.emit()
 		)
