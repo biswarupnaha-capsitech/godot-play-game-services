@@ -55,7 +55,7 @@ func _ready() -> void:
 func _connect_signals() -> void:
 	if GodotPlayGameServices.android_plugin:
 
-		GodotPlayGameServices.android_plugin.updateChecked.connect(
+		GodotPlayGameServices.android_plugin.update_checked.connect(
 			func(
 				available: bool,
 				version_code: int,
@@ -74,37 +74,37 @@ func _connect_signals() -> void:
 				)
 		)
 
-		GodotPlayGameServices.android_plugin.updateCheckFailed.connect(
+		GodotPlayGameServices.android_plugin.update_check_failed.connect(
 			func(error_code: int, error_message: String):
 				update_check_failed.emit(error_code, error_message)
 		)
 
-		GodotPlayGameServices.android_plugin.updateStarted.connect(
+		GodotPlayGameServices.android_plugin.update_started.connect(
 			func(immediate: bool):
 				update_started.emit(immediate)
 		)
 
-		GodotPlayGameServices.android_plugin.downloadProgress.connect(
+		GodotPlayGameServices.android_plugin.update_download_progress.connect(
 			func(bytes_downloaded: int, total_bytes: int):
 				update_download_progress.emit(bytes_downloaded, total_bytes)
 		)
 
-		GodotPlayGameServices.android_plugin.downloadCompleted.connect(
+		GodotPlayGameServices.android_plugin.update_download_completed.connect(
 			func():
 				update_download_completed.emit()
 		)
 
-		GodotPlayGameServices.android_plugin.installCompleted.connect(
+		GodotPlayGameServices.android_plugin.update_install_completed.connect(
 			func():
 				update_install_completed.emit()
 		)
 
-		GodotPlayGameServices.android_plugin.updateCancelled.connect(
+		GodotPlayGameServices.android_plugin.update_cancelled.connect(
 			func():
 				update_cancelled.emit()
 		)
 
-		GodotPlayGameServices.android_plugin.updateFailed.connect(
+		GodotPlayGameServices.android_plugin.update_failed.connect(
 			func(error_code: int, error_message: String):
 				update_failed.emit(error_code, error_message)
 		)
